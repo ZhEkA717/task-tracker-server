@@ -1,26 +1,51 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { Task } from './entities/task.entity';
+import { v4, validate } from 'uuid';
+import { UUIDException } from 'src/exceptions.ts/uuid.exception';
 
 @Injectable()
 export class TasksService {
-  create(createTaskDto: CreateTaskDto) {
-    return 'This action adds a new task';
+  private tasks: Task[] = [];
+
+  create(createTaskDto: CreateTaskDto): Task {
+    const id = v4();
+    const task = { id, ...createTaskDto };
+    this.tasks.push(task);
+    return task;
   }
 
   findAll() {
-    return `This action returns all tasks`;
+    return this.tasks;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} task`;
+  findOne(id: string): Task {
+    if (!validate(id)) throw new UUIDException();
+    const task = this.searchTask(id);
+    if (!task) throw new NotFoundException();
+    return task;
   }
 
-  update(id: number, updateTaskDto: UpdateTaskDto) {
-    return `This action updates a #${id} task`;
+  update(id: string, updateTaskDto: UpdateTaskDto): Task {
+    if (!validate(id)) throw new UUIDException();
+    const task = this.searchTask(id);
+    if (!task) throw new NotFoundException();
+    const nweTask = { ...task, ...updateTaskDto };
+    const index: number = this.tasks.indexOf(task);
+    this.tasks[index] = nweTask;
+    return nweTask;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} task`;
+  remove(id: string): void {
+    if (!validate(id)) throw new UUIDException();
+    const task = this.searchTask(id);
+    if (!task) throw new NotFoundException();
+    const index: number = this.tasks.indexOf(task);
+    this.tasks.splice(index, 1);
+  }
+
+  private searchTask(id: string): Task | undefined {
+    return this.tasks.find((task) => task.id === id);
   }
 }
