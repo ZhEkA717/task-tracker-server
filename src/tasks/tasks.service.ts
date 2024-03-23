@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
-import { Task } from './entities/task.entity';
 import { v4, validate } from 'uuid';
 import { UUIDException } from 'src/exceptions.ts/uuid.exception';
+import { Task } from './entities/task.entity';
 
 @Injectable()
 export class TasksService {
@@ -35,6 +35,11 @@ export class TasksService {
     const index: number = this.tasks.indexOf(task);
     this.tasks[index] = nweTask;
     return nweTask;
+  }
+
+  updateTasks(dto: Task[]): Task[] {
+    this.tasks = dto;
+    return dto;
   }
 
   remove(id: string): void {
