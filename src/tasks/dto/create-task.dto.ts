@@ -1,7 +1,7 @@
 export class CreateTaskDto {
   title: string;
   name: string;
-  deadline: string;
+  deadline: number;
   priority: TypePriority;
   status: boolean;
   performers: TypeUser[];
