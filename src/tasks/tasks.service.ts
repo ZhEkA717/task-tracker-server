@@ -12,7 +12,7 @@ export class TasksService {
   create(createTaskDto: CreateTaskDto): Task {
     const id = v4();
     const task = { id, ...createTaskDto };
-    this.tasks.push(task);
+    this.tasks.unshift(task);
     return task;
   }
 
